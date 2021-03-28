@@ -5,13 +5,11 @@ import java.awt.event.ActionListener;
 
 public class snake implements ActionListener {
 
-    cell[][] field;
+    mainEngine mainEngine;
     cell[] body;
     int body_head, body_tail;
     dir_vals cur_dir;
     Timer timer;
-    boolean inGame;
-
     static Image image;
 
     static {
@@ -19,18 +17,17 @@ public class snake implements ActionListener {
         image = iid.getImage();
     }
 
-    snake(cell[][] f){
+    snake(mainEngine me){
 
-        field = f;
+        mainEngine = me;
         cur_dir = dir_vals.RIGHT;
-        timer = new Timer(250,this);
-        inGame = true;
+        timer = new Timer(mainWindow.ONE_TICK,this);
 
         body = new cell[100];
         body_head = 2;
         body_tail = 0;
         for(int i = 0; i <= body_head; i++){
-            cell c = field[i][MainWindow.FIELD_SIZE / 2];
+            cell c = mainEngine.f[i][mainWindow.FIELD_SIZE / 2];
             c.z = cells_vals.SNAKE;
             body[i] = c;
         }
@@ -59,15 +56,13 @@ public class snake implements ActionListener {
                 break;
         };
 
-        if(x < 0 || y < 0 || x == MainWindow.FIELD_SIZE || y == MainWindow.FIELD_SIZE){
-            timer.stop();
-            inGame = false;
+        if(x < 0 || y < 0 || x == mainWindow.FIELD_SIZE || y == mainWindow.FIELD_SIZE){
+            mainEngine.gameOver();
             return;
         };
 
-        if(field[x][y].z == cells_vals.SNAKE || field[x][y].z == cells_vals.FEED){
-            timer.stop();
-            inGame = false;
+        if(mainEngine.f[x][y].z == cells_vals.SNAKE || mainEngine.f[x][y].z == cells_vals.FEED){
+            mainEngine.gameOver();
             return;
         };
 
@@ -86,10 +81,14 @@ public class snake implements ActionListener {
             body_head=0;
         }
 
-        cell c = field[x][y];
-        c.z = c.z == cells_vals.APPLE ? cells_vals.FEED : cells_vals.SNAKE;
+        cell c = mainEngine.f[x][y];
+        if(c.z == cells_vals.APPLE) {
+            c.z = cells_vals.FEED;
+            mainEngine.findAndRelocateApple(c);
+        } else {
+            c.z = cells_vals.SNAKE;
+        }
         body[body_head] = c;
-        // тут надо вызвать создание яблока
 
         c = body[body_tail];
         if(c.z == cells_vals.FEED) {
@@ -98,13 +97,16 @@ public class snake implements ActionListener {
             c.z = cells_vals.EMPTY;
             body_tail++;
         };
+
+        mainEngine.draw();
+
     }
 
     public void draw(Graphics g){
 
         int i = body_head;
         while(true){
-            g.drawImage(image, body[i].x * MainWindow.CELL_SIZE, body[i].y * MainWindow.CELL_SIZE, null);
+            g.drawImage(image, body[i].x * mainWindow.CELL_SIZE, body[i].y * mainWindow.CELL_SIZE, null);
             if(i == body_tail){
                 break;
             }

@@ -1,24 +1,25 @@
 import javax.swing.*;
 
-public class MainWindow {
+public class mainWindow {
 
     public final static int CELL_SIZE = 16;
-    public final static int FIELD_SIZE = 20;
+    public final static int FIELD_SIZE = 21;
+    public final static int ONE_TICK = 200;
 
-    MainWindow(){
+    mainWindow(){
 
         JFrame jfrm = new JFrame("Змейка");
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jfrm.setSize(CELL_SIZE * FIELD_SIZE, CELL_SIZE * FIELD_SIZE);
+        jfrm.setSize(CELL_SIZE * FIELD_SIZE + 16, CELL_SIZE * FIELD_SIZE + 40);
         jfrm.setLocation(400, 400);
 
-        jfrm.add(new MainEngine());
+        jfrm.add(new mainEngine());
 
         jfrm.setVisible(true);
 
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(MainWindow::new);
+        SwingUtilities.invokeLater(mainWindow::new);
     }
 }

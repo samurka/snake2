@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class apple implements ActionListener {
 
-    cell[][] field;
+    mainEngine mainEngine;
     cell body;
     Timer timer;
     static Image image;
@@ -16,18 +16,26 @@ public class apple implements ActionListener {
         image = iid.getImage();
     }
 
-    apple(cell[][] f){
+    apple(mainEngine me){
 
-        field = f;
-        timer = new Timer(2500,this);
+        mainEngine = me;
+        timer = new Timer(mainWindow.ONE_TICK * 20,this);
 
         locateApple();
 
     }
 
+    apple(mainEngine me, int x, int y){
+
+        mainEngine = me;
+        body = mainEngine.f[x][y];
+        body.z = cells_vals.APPLE;
+
+    }
+
     public void locateApple(){
         Random r = new Random();
-        body = field[r.nextInt(MainWindow.FIELD_SIZE)][r.nextInt(MainWindow.FIELD_SIZE)];
+        body = mainEngine.f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
         body.z = cells_vals.APPLE;
 
         timer.restart();
@@ -36,14 +44,12 @@ public class apple implements ActionListener {
     public void actionPerformed(ActionEvent ae){
         body.z = cells_vals.EMPTY;
         locateApple();
-    }
 
-    public void feedApple(){
-        locateApple();
+        mainEngine.draw();
     }
 
     public void draw(Graphics g){
-        g.drawImage(image, body.x * MainWindow.CELL_SIZE, body.y * MainWindow.CELL_SIZE, null);
+        g.drawImage(image, body.x * mainWindow.CELL_SIZE, body.y * mainWindow.CELL_SIZE, null);
     }
 
 }
