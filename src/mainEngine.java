@@ -88,7 +88,7 @@ public class mainEngine extends JPanel {
 
         if(gameOver){
             g.setColor(Color.white);
-            g.drawString("Game Over",1,1);
+            g.drawString("Game Over",10,10);
         }
 
 //        for(apple a : apls){

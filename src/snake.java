@@ -10,11 +10,20 @@ public class snake implements ActionListener {
     int body_head, body_tail;
     dir_vals cur_dir;
     Timer timer;
-    static Image image;
+    static Image image_head_r, image_head_l, image_head_u, image_head_d, image_body;
 
     static {
-        ImageIcon iid = new ImageIcon("snake.png");
-        image = iid.getImage();
+        ImageIcon iid;
+        iid = new ImageIcon("snake_0.png");
+        image_body = iid.getImage();
+        iid = new ImageIcon("snake_r.png");
+        image_head_r = iid.getImage();
+        iid = new ImageIcon("snake_l.png");
+        image_head_l = iid.getImage();
+        iid = new ImageIcon("snake_u.png");
+        image_head_u = iid.getImage();
+        iid = new ImageIcon("snake_d.png");
+        image_head_d = iid.getImage();
     }
 
     snake(mainEngine me){
@@ -29,6 +38,7 @@ public class snake implements ActionListener {
         for(int i = 0; i <= body_head; i++){
             cell c = mainEngine.f[i][mainWindow.FIELD_SIZE / 2];
             c.z = cells_vals.SNAKE;
+            c.dir_in = dir_vals.RIGHT;
             body[i] = c;
         }
 
@@ -76,6 +86,7 @@ public class snake implements ActionListener {
             c.z = cells_vals.SNAKE;
         }
         body[body_head] = c;
+        c.dir_in = cur_dir;
 
         c = body[body_tail];
         if(c.z == cells_vals.FEED) {
@@ -109,22 +120,35 @@ public class snake implements ActionListener {
         }
         body = body2;
         body_tail = 0;
-        body_head = j;
+        body_head = j+1;
     }
 
     public void draw(Graphics g){
 
+        Image im;
+        cell c;
+
+        c = body[body_head];
+        switch (c.dir_in){
+            case RIGHT -> im = image_head_r;
+            case LEFT -> im = image_head_l;
+            case UP -> im = image_head_u;
+            default -> im = image_head_d;
+        }
+
+        g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
+
+        im = image_body;
         int i = body_head;
-        while(true){
-            g.drawImage(image, body[i].x * mainWindow.CELL_SIZE, body[i].y * mainWindow.CELL_SIZE, null);
-            if(i == body_tail){
-                break;
-            }
-            if(i == 0) {
+
+        do {
+            if (i == 0) {
                 i = body.length;
             }
             i--;
-        }
+            c = body[i];
+            g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
+        } while (i != body_tail);
     }
 
 }
