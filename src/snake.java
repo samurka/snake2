@@ -23,7 +23,7 @@ public class snake implements ActionListener {
         cur_dir = dir_vals.RIGHT;
         timer = new Timer(mainWindow.ONE_TICK,this);
 
-        body = new cell[100];
+        body = new cell[10];
         body_head = 2;
         body_tail = 0;
         for(int i = 0; i <= body_head; i++){
@@ -96,6 +96,9 @@ public class snake implements ActionListener {
         } else {
             c.z = cells_vals.EMPTY;
             body_tail++;
+            if(body_tail == body.length){
+                body_tail=0;
+            };
         };
 
         mainEngine.draw();
