@@ -10,12 +10,14 @@ public class snake implements ActionListener {
     int body_head, body_tail;
     dir_vals cur_dir;
     Timer timer;
-    static Image image_head_r, image_head_l, image_head_u, image_head_d, image_body;
+    static Image image_head_r, image_head_l, image_head_u, image_head_d, image_body, image_feed;
 
     static {
         ImageIcon iid;
         iid = new ImageIcon("snake_0.png");
         image_body = iid.getImage();
+        iid = new ImageIcon("snake_1.png");
+        image_feed = iid.getImage();
         iid = new ImageIcon("snake_r.png");
         image_head_r = iid.getImage();
         iid = new ImageIcon("snake_l.png");
@@ -30,7 +32,7 @@ public class snake implements ActionListener {
 
         mainEngine = me;
         cur_dir = dir_vals.RIGHT;
-        timer = new Timer(mainWindow.ONE_TICK,this);
+        timer = new Timer(mainWindow.ONE_TICK * 3,this);
 
         body = new cell[10];
         body_head = 2;
@@ -127,8 +129,9 @@ public class snake implements ActionListener {
 
         Image im;
         cell c;
+        int i = body_head;
 
-        c = body[body_head];
+        c = body[i];
         switch (c.dir_in){
             case RIGHT -> im = image_head_r;
             case LEFT -> im = image_head_l;
@@ -138,15 +141,16 @@ public class snake implements ActionListener {
 
         g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
 
-        im = image_body;
-        int i = body_head;
-
         do {
             if (i == 0) {
                 i = body.length;
             }
             i--;
             c = body[i];
+            switch (c.z){
+                case FEED -> im = image_feed;
+                default -> im = image_body;
+            }
             g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
         } while (i != body_tail);
     }

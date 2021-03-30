@@ -4,7 +4,7 @@ public class mainWindow {
 
     public final static int CELL_SIZE = 16;
     public final static int FIELD_SIZE = 21;
-    public final static int ONE_TICK = 200;
+    public final static int ONE_TICK = 100;
 
     mainWindow(){
 

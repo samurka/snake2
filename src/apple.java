@@ -9,6 +9,7 @@ public class apple implements ActionListener {
     mainEngine mainEngine;
     cell body;
     Timer timer;
+    int blinks;
     static Image image;
 
     static {
@@ -19,7 +20,8 @@ public class apple implements ActionListener {
     apple(mainEngine me){
 
         mainEngine = me;
-        timer = new Timer(mainWindow.ONE_TICK * 20,this);
+        timer = new Timer(0,this);
+        timer.setRepeats(false);
 
         locateApple();
 
@@ -35,21 +37,33 @@ public class apple implements ActionListener {
 
     public void locateApple(){
         Random r = new Random();
-        body = mainEngine.f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
+        do {
+            body = mainEngine.f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
+        } while (body.z != cells_vals.EMPTY);
         body.z = cells_vals.APPLE;
 
+        blinks = 0;
+        timer.setInitialDelay(mainWindow.ONE_TICK * 100);
         timer.restart();
     }
 
     public void actionPerformed(ActionEvent ae){
-        body.z = cells_vals.EMPTY;
-        locateApple();
+        if(blinks==6){
+            body.z = cells_vals.EMPTY;
+            locateApple();
+        } else {
+            blinks++;
+            timer.setInitialDelay(mainWindow.ONE_TICK * 5);
+            timer.start();
+        }
 
         mainEngine.draw();
     }
 
     public void draw(Graphics g){
-        g.drawImage(image, body.x * mainWindow.CELL_SIZE, body.y * mainWindow.CELL_SIZE, null);
+        if(blinks % 2 == 0) {
+            g.drawImage(image, body.x * mainWindow.CELL_SIZE, body.y * mainWindow.CELL_SIZE, null);
+        }
     }
 
 }
