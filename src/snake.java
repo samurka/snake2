@@ -147,9 +147,10 @@ public class snake implements ActionListener {
             }
             i--;
             c = body[i];
-            switch (c.z){
-                case FEED -> im = image_feed;
-                default -> im = image_body;
+            if (c.z == cells_vals.FEED) {
+                im = image_feed;
+            } else {
+                im = image_body;
             }
             g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
         } while (i != body_tail);
