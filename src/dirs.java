@@ -1,3 +1,3 @@
-public enum dir_vals {
+public enum dirs {
     UP, DOWN, LEFT, RIGHT
 }

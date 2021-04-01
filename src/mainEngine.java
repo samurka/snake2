@@ -7,7 +7,6 @@ public class mainEngine extends JPanel {
     cell[][] f;
     snake s;
     apple a1, a2;
-    apple[] apls;
     boolean gameOver;
 
     mainEngine(){
@@ -22,23 +21,19 @@ public class mainEngine extends JPanel {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
                 int key = e.getKeyCode();
-                if(key == KeyEvent.VK_LEFT && s.cur_dir != dir_vals.RIGHT){
-                    s.cur_dir = dir_vals.LEFT;
-                } else if (key == KeyEvent.VK_RIGHT && s.cur_dir != dir_vals.LEFT){
-                    s.cur_dir = dir_vals.RIGHT;
-                } else if (key == KeyEvent.VK_UP && s.cur_dir != dir_vals.DOWN){
-                    s.cur_dir = dir_vals.UP;
-                } else if (key == KeyEvent.VK_DOWN && s.cur_dir != dir_vals.UP) {
-                    s.cur_dir = dir_vals.DOWN;
+                if(key == KeyEvent.VK_LEFT && s.d != dirs.RIGHT){
+                    s.d = dirs.LEFT;
+                } else if (key == KeyEvent.VK_RIGHT && s.d != dirs.LEFT){
+                    s.d = dirs.RIGHT;
+                } else if (key == KeyEvent.VK_UP && s.d != dirs.DOWN){
+                    s.d = dirs.UP;
+                } else if (key == KeyEvent.VK_DOWN && s.d != dirs.UP) {
+                    s.d = dirs.DOWN;
                 }
             }
         });
 
         setFocusable(true);
-//        apls = new apple[mainWindow.FIELD_SIZE];
-//        for(int i = 0; i < mainWindow.FIELD_SIZE; i++){
-//            apls[i] = new apple(this, i , i);
-//        }
 
         setBackground(Color.BLACK);
 
@@ -46,17 +41,17 @@ public class mainEngine extends JPanel {
 
     }
 
-    public cell[][] emptyField(){
+    cell[][] emptyField(){
         f = new cell[mainWindow.FIELD_SIZE][mainWindow.FIELD_SIZE];
         for (int i = 0; i < mainWindow.FIELD_SIZE; i++){
             for(int j = 0; j < mainWindow.FIELD_SIZE; j++){
-                f[i][j] = new cell(i,j,cells_vals.EMPTY);
+                f[i][j] = new cell(i,j,vals.EMPTY);
             }
         }
         return f;
     }
 
-    public void gameOver(){
+    void gameOver(){
         s.timer.stop();
         a1.timer.stop();
         a2.timer.stop();
@@ -66,9 +61,9 @@ public class mainEngine extends JPanel {
 
     }
 
-    public void findAndRelocateApple(cell c){
+    void findAndRelocateApple(cell c){
 
-        if(a1.body.equals(c)){
+        if(a1.c.equals(c)){
             a1.locateApple();
         } else {
             a2.locateApple();
@@ -76,7 +71,7 @@ public class mainEngine extends JPanel {
 
     }
 
-    public void draw(){
+    void draw(){
         repaint();
     }
 
@@ -91,9 +86,6 @@ public class mainEngine extends JPanel {
             g.drawString("Game Over",10,10);
         }
 
-//        for(apple a : apls){
-//           a.draw(g);
-//        }
     }
 
 }

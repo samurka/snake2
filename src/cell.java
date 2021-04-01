@@ -2,14 +2,13 @@
 public class cell {
 
     int x, y;
-    cells_vals z;
-    dir_vals dir_in;
+    vals v;
+    dirs d = null;
 
-    cell(int a, int b, cells_vals c){
-        x = a;
-        y = b;
-        z = c;
-        dir_in = null;
+    cell(int x, int y, vals v){
+        this.x = x;
+        this.y = y;
+        this.v = v;
     }
 
 }

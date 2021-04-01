@@ -1,3 +1,3 @@
-public enum cells_vals {
+public enum vals {
     EMPTY, SNAKE, APPLE, FEED
 }

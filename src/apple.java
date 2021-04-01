@@ -6,8 +6,8 @@ import java.util.Random;
 
 public class apple implements ActionListener {
 
-    mainEngine mainEngine;
-    cell body;
+    mainEngine me;
+    cell c;
     Timer timer;
     int blinks;
     static Image image;
@@ -18,30 +18,18 @@ public class apple implements ActionListener {
     }
 
     apple(mainEngine me){
-
-        mainEngine = me;
+        this.me = me;
         timer = new Timer(0,this);
         timer.setRepeats(false);
-
         locateApple();
-
     }
 
-    apple(mainEngine me, int x, int y){
-
-        mainEngine = me;
-        body = mainEngine.f[x][y];
-        body.z = cells_vals.APPLE;
-
-    }
-
-    public void locateApple(){
+    void locateApple(){
         Random r = new Random();
         do {
-            body = mainEngine.f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
-        } while (body.z != cells_vals.EMPTY);
-        body.z = cells_vals.APPLE;
-
+            c = me.f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
+        } while (c.v != vals.EMPTY);
+        c.v = vals.APPLE;
         blinks = 0;
         timer.setInitialDelay(mainWindow.ONE_TICK * 100);
         timer.restart();
@@ -49,21 +37,18 @@ public class apple implements ActionListener {
 
     public void actionPerformed(ActionEvent ae){
         if(blinks==6){
-            body.z = cells_vals.EMPTY;
+            c.v = vals.EMPTY;
             locateApple();
         } else {
             blinks++;
             timer.setInitialDelay(mainWindow.ONE_TICK * 5);
             timer.start();
         }
-
-        mainEngine.draw();
+        me.draw();
     }
 
-    public void draw(Graphics g){
-        if(blinks % 2 == 0) {
-            g.drawImage(image, body.x * mainWindow.CELL_SIZE, body.y * mainWindow.CELL_SIZE, null);
-        }
+    void draw(Graphics g){
+        if (blinks % 2 == 0) g.drawImage(image, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
     }
 
 }
