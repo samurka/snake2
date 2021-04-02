@@ -1,3 +1,3 @@
 public enum vals {
-    EMPTY, SNAKE, APPLE, FEED
+    EMPTY, SNAKE, APPLE, FEED, STONE
 }

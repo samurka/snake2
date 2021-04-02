@@ -2,13 +2,13 @@ import java.util.Iterator;
 
 public class cell_Iterator implements Iterator<cell> {
 
-    body iterObj;
-    int curInd;
-    boolean hasNext = true;
+    private body iterObj;
+    private int curInd;
+    private boolean hasNext = true;
 
-    cell_Iterator(body b){
+    cell_Iterator(body b) {
         iterObj = b;
-        curInd = b.head;
+        curInd = iterObj.getHead();
     }
 
     @Override
@@ -18,14 +18,14 @@ public class cell_Iterator implements Iterator<cell> {
 
     @Override
     public cell next() {
-        cell c = iterObj.b[curInd];
-        if(curInd== iterObj.tail) {
+        cell c = iterObj.getCell(curInd);
+        if (curInd == iterObj.getTail()) {
             hasNext = false;
         } else {
-            if(curInd==0){
-                curInd = iterObj.b.length;
+            if (curInd == 0) {
+                curInd = iterObj.getLength();
             }
-        curInd--;
+            curInd--;
         }
         return c;
     }

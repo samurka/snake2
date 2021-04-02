@@ -2,42 +2,47 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
 
 public class apple implements ActionListener {
 
-    mainEngine me;
-    cell c;
-    Timer timer;
-    int blinks;
-    static Image image;
+    private final static Image image;
+    private final mainEngine me;
+    private final Timer timer;
+    private cell c;
+    private int blinks;
 
     static {
         ImageIcon iid = new ImageIcon("apple.png");
         image = iid.getImage();
     }
 
-    apple(mainEngine me){
+    apple(mainEngine me) {
         this.me = me;
-        timer = new Timer(0,this);
+        timer = new Timer(0, this);
         timer.setRepeats(false);
         locateApple();
     }
 
-    void locateApple(){
-        Random r = new Random();
-        do {
-            c = me.f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
-        } while (c.v != vals.EMPTY);
-        c.v = vals.APPLE;
+    private void locateApple() {
+        c = me.getRandomEmptyCell();
+        c.setV(vals.APPLE);
         blinks = 0;
         timer.setInitialDelay(mainWindow.ONE_TICK * 100);
         timer.restart();
     }
 
-    public void actionPerformed(ActionEvent ae){
-        if(blinks==6){
-            c.v = vals.EMPTY;
+    public boolean relocateIfEqual(cell c) {
+        if (c.equals(this.c)) {
+            locateApple();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void actionPerformed(ActionEvent ae) {
+        if (blinks == 6) {
+            c.setV(vals.EMPTY);
             locateApple();
         } else {
             blinks++;
@@ -47,8 +52,12 @@ public class apple implements ActionListener {
         me.draw();
     }
 
-    void draw(Graphics g){
-        if (blinks % 2 == 0) g.drawImage(image, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
+    public void draw(Graphics g) {
+        if (blinks % 2 == 0) c.draw(g, image);
+    }
+
+    public void stopTimer() {
+        timer.stop();
     }
 
 }

@@ -2,14 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 public class snake implements ActionListener {
 
-    mainEngine me;
-    body b;
-    dirs d;
-    Timer timer;
-    static Image image_head_r, image_head_l, image_head_u, image_head_d, image_body, image_feed;
+    private final static Image image_head_r, image_head_l, image_head_u, image_head_d, image_body, image_feed;
+    private final mainEngine me;
+    private final Timer timer;
+    private final body b;
+    private dirs d; // next direction
+    private dirs h; // head direction
 
     static {
         ImageIcon iid;
@@ -27,114 +29,86 @@ public class snake implements ActionListener {
         image_head_d = iid.getImage();
     }
 
-    snake(mainEngine me){
+    snake(mainEngine me) {
         this.me = me;
-        b = new body();
-        cell c;
-        for(int i = 0; i <= 2; i++){
-            c = me.f[i][mainWindow.FIELD_SIZE / 2];
-            c.v = vals.SNAKE;
-            c.d = dirs.RIGHT;
-            b.setHead(c,i);
+        b = new body(me.getInitialSnakeCells());
+        for (cell c : new cell_Iterable(b)) {
+            c.setV(vals.SNAKE);
         }
-        d = dirs.RIGHT;
-        timer = new Timer(mainWindow.ONE_TICK * 3,this);
+        d = h = dirs.RIGHT;
+        timer = new Timer(mainWindow.ONE_TICK * 3, this);
         timer.start();
     }
 
-    public void actionPerformed(ActionEvent ae){
+    public void actionPerformed(ActionEvent ae) {
 
         cell c;
-        c = b.getHead();
+        c = me.tryMoveHead(b.getCell(b.getHead()), d);
 
-        int x = c.x;
-        int y = c.y;
-
-        switch (d) {
-            case RIGHT -> x++;
-            case LEFT -> x--;
-            case UP -> y--;
-            case DOWN -> y++;
-        }
-
-        if(x < 0 || y < 0 || x == mainWindow.FIELD_SIZE || y == mainWindow.FIELD_SIZE){
-            me.gameOver();
+        if (c != null) {
+            if (c.getV() == vals.APPLE) {
+                c.setV(vals.FEED);
+                me.findAndRelocateApple(c);
+            } else {
+                c.setV(vals.SNAKE);
+            }
+            h = d;
+            b.moveHead(c);
+        } else {
             return;
         }
 
-        if(me.f[x][y].v == vals.SNAKE || me.f[x][y].v == vals.FEED){
-            me.gameOver();
-            return;
-        }
+        c = b.getCell(b.getTail());
 
-        c = me.f[x][y];
-        c.d = d;
-        if(c.v == vals.APPLE) {
-            c.v = vals.FEED;
-            me.findAndRelocateApple(c);
+        if (c.getV() == vals.FEED) {
+            c.setV(vals.SNAKE);
         } else {
-            c.v = vals.SNAKE;
-        }
-
-        b.moveHead(c);
-
-        c = b.getTail();
-
-        if(c.v == vals.FEED) {
-            c.v = vals.SNAKE;
-        } else {
-            c.v = vals.EMPTY;
+            c.setV(vals.EMPTY);
             b.moveTail();
         }
-
         me.draw();
 
     }
 
-    void draw(Graphics g){
+    void draw(Graphics g) {
 
         Image im;
         boolean f = true;
 
-//        cell_Iterator i = new cell_Iterator(b);
-//        cell c;
-//        while (i.hasNext()){
-//            c = i.next();
-//            if(f){
-//                switch (c.d){
-//                    case RIGHT -> im = image_head_r;
-//                    case LEFT -> im = image_head_l;
-//                    case UP -> im = image_head_u;
-//                    default -> im = image_head_d;
-//                }
-//                f = false;
-//            } else{
-//                switch (c.v){
-//                    case FEED -> im = image_feed;
-//                    default -> im = image_body;
-//                }
-//            }
-//            g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
-//        }
-
-        for(cell c : new cell_Iterable(b)){
-            if(f){
-                switch (c.d){
+        for (cell c : new cell_Iterable(b)) {
+            if (f) {
+                switch (h) {
                     case RIGHT -> im = image_head_r;
                     case LEFT -> im = image_head_l;
                     case UP -> im = image_head_u;
                     default -> im = image_head_d;
                 }
                 f = false;
-            } else{
-                switch (c.v){
+            } else {
+                switch (c.getV()) {
                     case FEED -> im = image_feed;
                     default -> im = image_body;
                 }
             }
-            g.drawImage(im, c.x * mainWindow.CELL_SIZE, c.y * mainWindow.CELL_SIZE, null);
+            c.draw(g, im);
         }
 
+    }
+
+    public void changeDir(int key) {
+        if (key == KeyEvent.VK_LEFT && h != dirs.RIGHT) {
+            d = dirs.LEFT;
+        } else if (key == KeyEvent.VK_RIGHT && h != dirs.LEFT) {
+            d = dirs.RIGHT;
+        } else if (key == KeyEvent.VK_UP && h != dirs.DOWN) {
+            d = dirs.UP;
+        } else if (key == KeyEvent.VK_DOWN && h != dirs.UP) {
+            d = dirs.DOWN;
+        }
+    }
+
+    public void stopTimer() {
+        timer.stop();
     }
 
 }

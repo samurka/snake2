@@ -2,11 +2,14 @@ import javax.swing.*;
 
 public class mainWindow {
 
-    public final static int CELL_SIZE = 16;
-    public final static int FIELD_SIZE = 21;
-    public final static int ONE_TICK = 100;
+    protected final static int CELL_SIZE = 16;
+    protected final static int FIELD_SIZE = 21;
+    protected final static int ONE_TICK = 100;
+    protected final static int QUANTITY_APPLES = 3;
+    protected final static int QUANTITY_STONES = 6;
+    protected final static int INITIAL_QUANTITY_SNAKE = 3;
 
-    mainWindow(){
+    mainWindow() {
 
         JFrame jfrm = new JFrame("Змейка");
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

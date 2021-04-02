@@ -1,91 +1,142 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Random;
 
 public class mainEngine extends JPanel {
 
-    cell[][] f;
-    snake s;
-    apple a1, a2;
-    boolean gameOver;
+    private cell[][] f;
+    private final snake s;
+    private apple[] aa;
+    private stone[] ss;
+    private boolean gameOver;
+    private int q;
 
-    mainEngine(){
-
-        f = emptyField();
+    mainEngine() {
+        createField();
         s = new snake(this);
-        a1 = new apple(this);
-        a2 = new apple(this);
+        createApples();
+        createStones();
         gameOver = false;
 
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                int key = e.getKeyCode();
-                if(key == KeyEvent.VK_LEFT && s.d != dirs.RIGHT){
-                    s.d = dirs.LEFT;
-                } else if (key == KeyEvent.VK_RIGHT && s.d != dirs.LEFT){
-                    s.d = dirs.RIGHT;
-                } else if (key == KeyEvent.VK_UP && s.d != dirs.DOWN){
-                    s.d = dirs.UP;
-                } else if (key == KeyEvent.VK_DOWN && s.d != dirs.UP) {
-                    s.d = dirs.DOWN;
-                }
+                s.changeDir(e.getKeyCode());
             }
         });
 
         setFocusable(true);
-
         setBackground(Color.BLACK);
-
         draw();
-
     }
 
-    cell[][] emptyField(){
+    private void createField() {
         f = new cell[mainWindow.FIELD_SIZE][mainWindow.FIELD_SIZE];
-        for (int i = 0; i < mainWindow.FIELD_SIZE; i++){
-            for(int j = 0; j < mainWindow.FIELD_SIZE; j++){
-                f[i][j] = new cell(i,j,vals.EMPTY);
+        for (int i = 0; i < mainWindow.FIELD_SIZE; i++) {
+            for (int j = 0; j < mainWindow.FIELD_SIZE; j++) {
+                f[i][j] = new cell(i, j);
             }
         }
-        return f;
     }
 
-    void gameOver(){
-        s.timer.stop();
-        a1.timer.stop();
-        a2.timer.stop();
+    private void createApples() {
+        aa = new apple[mainWindow.QUANTITY_APPLES];
+        for (int i = 0; i < mainWindow.QUANTITY_APPLES; i++) {
+            aa[i] = new apple(this);
+        }
+    }
 
+    private void createStones() {
+        ss = new stone[mainWindow.QUANTITY_STONES];
+        for (int i = 0; i < mainWindow.QUANTITY_STONES; i++) {
+            ss[i] = new stone(this);
+        }
+    }
+
+    public void gameOver() {
+        s.stopTimer();
+        for (apple i : aa) {
+            i.stopTimer();
+        }
         gameOver = true;
         repaint();
-
     }
 
-    void findAndRelocateApple(cell c){
+    public cell[] getInitialSnakeCells() {
+        cell[] cc = new cell[mainWindow.INITIAL_QUANTITY_SNAKE];
+        for (int i = 0; i < mainWindow.INITIAL_QUANTITY_SNAKE; i++) {
+            cc[i] = f[i][mainWindow.FIELD_SIZE / 2];
+        }
+        return cc;
+    }
 
-        if(a1.c.equals(c)){
-            a1.locateApple();
-        } else {
-            a2.locateApple();
+    public cell getRandomEmptyCell() {
+        Random r = new Random();
+        cell c;
+        do {
+            c = f[r.nextInt(mainWindow.FIELD_SIZE)][r.nextInt(mainWindow.FIELD_SIZE)];
+        } while (c.getV() != vals.EMPTY);
+        return c;
+    }
+
+    public void findAndRelocateApple(cell c) {
+        q++;
+        for (apple i : aa) {
+            boolean done = i.relocateIfEqual(c);
+            if (done) break;
+        }
+    }
+
+    public cell tryMoveHead(cell c, dirs d) {
+
+        int x = c.getX();
+        int y = c.getY();
+
+        switch (d) {
+            case RIGHT -> x++;
+            case LEFT -> x--;
+            case UP -> y--;
+            case DOWN -> y++;
         }
 
+        if (x < 0 || y < 0 || x == mainWindow.FIELD_SIZE || y == mainWindow.FIELD_SIZE) {
+            gameOver();
+            return null;
+        }
+
+        if (f[x][y].getV() == vals.SNAKE || f[x][y].getV() == vals.FEED || f[x][y].getV() == vals.STONE) {
+            gameOver();
+            return null;
+        }
+
+        return f[x][y];
+
     }
 
-    void draw(){
+    public void draw() {
         repaint();
     }
 
-    public void paintComponent(Graphics g){
+
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         s.draw(g);
-        a1.draw(g);
-        a2.draw(g);
-
-        if(gameOver){
-            g.setColor(Color.white);
-            g.drawString("Game Over",10,10);
+        for (apple i : aa) {
+            i.draw(g);
         }
-
+        for (stone i : ss) {
+            i.draw(g);
+        }
+        Font f = new Font("Arial", Font.BOLD, 14);
+        g.setFont(f);
+        g.drawString("" + q, mainWindow.CELL_SIZE * mainWindow.FIELD_SIZE - 25, 20);
+        if (gameOver) {
+            g.setColor(Color.white);
+            f = new Font("Arial", Font.BOLD, 36);
+            g.setFont(f);
+            g.drawString("Game Over", mainWindow.CELL_SIZE * mainWindow.FIELD_SIZE / 2 - 100, mainWindow.CELL_SIZE * mainWindow.FIELD_SIZE / 2);
+        }
     }
 
 }
